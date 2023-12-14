@@ -26,9 +26,6 @@ export default function Home() {
         switch (event) {
           case "SIGNED_IN":
             setUser(session?.user);
-            console.log("ses");
-            console.log(session?.user.id);
-            console.log("ses");
             dispatch(setUserId(session?.user.id));
             break;
           case "SIGNED_OUT":

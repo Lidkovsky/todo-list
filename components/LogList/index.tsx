@@ -4,19 +4,21 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import supabase from "@/supabase";
 
 function LogList() {
-  const [logs, setLogs] = useState<string[]>([]);
+  const [logs, setLogs] = useState<{ information: string; user_id: string }[]>(
+    []
+  );
   useEffect(() => {
     const fetchLogs = async () => {
       try {
         const { data, error } = await supabase
           .from("log")
-          .select("information");
+          .select("information, user_id");
         if (error) {
           console.log(error);
           throw error;
         }
         if (data) {
-          setLogs(data.map((log) => log.information));
+          setLogs([...logs, ...data]);
         }
       } catch (error) {
         console.log(error);
@@ -31,17 +33,20 @@ function LogList() {
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "log" },
       (payload) => {
-        setLogs([...logs, payload.new.information]);
+        const { information, user_id } = payload.new;
+
+        setLogs([...logs, { information: information, user_id: user_id }]);
       }
     )
     .subscribe();
 
   return (
     <ScrollArea className="h-full">
-      {logs?.toReversed().map((log: string, index: number) => (
-        <p key={index} className="text-slate-600 my-2">
-          {log}
-        </p>
+      {logs?.toReversed().map((log, index: number) => (
+        <div className="my-2" key={index}>
+          <p className="text-slate-600">{log.information}</p>
+          <p className="text-xs text-slate-400">By: {log.user_id}</p>
+        </div>
       ))}
       <ScrollBar />
     </ScrollArea>

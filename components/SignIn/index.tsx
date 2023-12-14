@@ -17,6 +17,7 @@ function SignIn({ signUp }: { signUp: () => void }) {
   const dispatch = useDispatch();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -29,6 +30,7 @@ function SignIn({ signUp }: { signUp: () => void }) {
         throw error;
       } else {
         dispatch(setUserId(data.session.user.id));
+
         await supabase
           .from("log")
           .insert([
@@ -36,6 +38,7 @@ function SignIn({ signUp }: { signUp: () => void }) {
               event_type: "NONE",
               information: "Signed in: " + email,
               table_name: "users",
+              user_id: data.session.user.id,
             },
           ])
           .select();

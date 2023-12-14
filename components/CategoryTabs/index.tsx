@@ -23,8 +23,15 @@ function CategoryTabs({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     dispatch(fetchTasks() as any);
-    dispatch(fetchCategories() as any);
-    categories.length != 0 ?? dispatch(updateTab(categories[0]));
+    dispatch(fetchCategories() as any).then(() => {
+      if (categories.length != 0)
+        dispatch(
+          updateTab({
+            id: categories[0].id.toString(),
+            category: categories[0].category,
+          })
+        );
+    });
   }, []);
 
   const onDragEnd = (result: DropResult) => {
@@ -48,9 +55,6 @@ function CategoryTabs({ children }: { children: React.ReactNode }) {
     );
 
     updateOrder(destination.index, source.index);
-    // .then(() =>
-    //   dispatch(fetchTasks() as any)
-    // );
   };
 
   return (

@@ -19,37 +19,6 @@ const useCategories = () => {
   const deleteCategory = async (id: string) => {
     try {
       let categoryIndex = categories.findIndex((c: Categories) => c.id == id);
-      switch (categoryIndex) {
-        case -1:
-          throw "Id not found.";
-
-        case 0:
-          if (categories.length === 1) {
-            dispatch(
-              updateTab({
-                id: -1,
-                category: null,
-              })
-            );
-          } else {
-            dispatch(
-              updateTab({
-                id: categories[1].id,
-                category: categories[1].category,
-              })
-            );
-          }
-
-          break;
-        default:
-          dispatch(
-            updateTab({
-              id: categories[categoryIndex - 1].id,
-              category: categories[categoryIndex - 1].category,
-            })
-          );
-          break;
-      }
 
       const { data, error } = await supabase
         .from("categories")
@@ -62,6 +31,37 @@ const useCategories = () => {
         console.log(error);
         throw error;
       } else {
+        switch (categoryIndex) {
+          case -1:
+            throw "Id not found.";
+
+          case 0:
+            if (categories.length === 1) {
+              dispatch(
+                updateTab({
+                  id: -1,
+                  category: null,
+                })
+              );
+            } else {
+              dispatch(
+                updateTab({
+                  id: categories[1].id,
+                  category: categories[1].category,
+                })
+              );
+            }
+
+            break;
+          default:
+            dispatch(
+              updateTab({
+                id: categories[categoryIndex - 1].id,
+                category: categories[categoryIndex - 1].category,
+              })
+            );
+            break;
+        }
         dispatch(deleteCategoryDispatch(id));
         await supabase
           .from("log")
@@ -70,6 +70,7 @@ const useCategories = () => {
               event_type: "DELETE",
               information: "Category deleted: " + data.category,
               table_name: "categories",
+              user_id: userId,
             },
           ])
           .select();
@@ -107,11 +108,11 @@ const useCategories = () => {
               event_type: "INSERT",
               information: "New category created: " + data.category,
               table_name: "categories",
+              user_id: userId,
             },
           ])
           .select();
       }
-      return data;
     } catch (error) {
       return error;
     }

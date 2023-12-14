@@ -6,13 +6,10 @@ import useCategories from "@/hooks/useCategories";
 import type { RootState } from "../../app/GlobalRedux/store";
 import { useSelector } from "react-redux";
 
-import { useDispatch } from "react-redux";
-import { updateTab } from "../../app/GlobalRedux/Features/selectedTabSlice";
 import { Trash } from "lucide-react";
 
 function DeleteCategory() {
   const selectedTab = useSelector((state: RootState) => state.selectTab.id);
-  const dispatch = useDispatch();
   const { deleteCategory } = useCategories();
   const categories = useSelector((state: RootState) => state.categories);
   return (

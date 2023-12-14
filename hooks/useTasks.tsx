@@ -14,7 +14,7 @@ const useTasks = () => {
   const dispatch = useDispatch();
 
   const selectedTab = useSelector((state: RootState) => state.selectTab);
-
+  const userId = useSelector((state: RootState) => state.userId.id);
   const editTask = async (editedTask: string, id: string) => {
     try {
       const { data, error } = await supabase
@@ -34,8 +34,9 @@ const useTasks = () => {
           .insert([
             {
               event_type: "EDIT",
-              information: "Task - " + id + " - edited to: " + editedTask,
+              information: "Task with id " + id + " edited to: " + editedTask,
               table_name: "tasks",
+              user_id: userId,
             },
           ])
           .select();
@@ -62,6 +63,7 @@ const useTasks = () => {
               event_type: "DELETE",
               information: "Deleted task ID: " + taskId,
               table_name: "tasks",
+              user_id: userId,
             },
           ])
           .select();
@@ -97,6 +99,7 @@ const useTasks = () => {
               event_type: "INSERT",
               information: "New task: " + task,
               table_name: "tasks",
+              user_id: userId,
             },
           ])
           .select();
@@ -127,6 +130,7 @@ const useTasks = () => {
                 ? "Task unCompleted: " + task.task
                 : "Task completed: " + task.task,
               table_name: "tasks",
+              user_id: userId,
             },
           ])
           .select();
@@ -156,6 +160,7 @@ const useTasks = () => {
               event_type: "EDIT",
               information: "Changed order for task: " + data.task,
               table_name: "tasks",
+              user_id: userId,
             },
           ])
           .select();
