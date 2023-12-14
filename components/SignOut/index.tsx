@@ -12,6 +12,7 @@ function SignOut() {
     if (error) {
       console.log(error);
     } else {
+      localStorage.removeItem("supabaseToken");
       const { error } = await supabase
         .from("log")
         .insert([

@@ -25,8 +25,12 @@ export default function Home() {
       (event, session) => {
         switch (event) {
           case "SIGNED_IN":
-            setUser(session?.user);
-            dispatch(setUserId(session?.user.id));
+            if (session) {
+              setUser(session?.user);
+              localStorage.setItem("supabaseToken", session.access_token);
+              dispatch(setUserId(session?.user.id));
+            }
+
             break;
           case "SIGNED_OUT":
             setUser(null);
@@ -52,7 +56,7 @@ export default function Home() {
           <Tabs>
             <TabsContentList />
           </Tabs>
-          <div className="flex mt-4 justify-between w-full">
+          <div className="flex gap-2 items-end mt-4 justify-between w-full sm:flex-row ">
             <SignOut />
             <Footer />
           </div>

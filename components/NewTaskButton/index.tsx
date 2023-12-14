@@ -31,7 +31,7 @@ function NewTaskButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button disabled={categories.data.length === 0}>
+        <Button disabled={categories.data.length === 0} className="w-full">
           <Plus size={16} className="mr-1" /> New Task
         </Button>
       </DialogTrigger>

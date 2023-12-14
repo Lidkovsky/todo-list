@@ -61,7 +61,7 @@ function CategoryTabs({ children }: { children: React.ReactNode }) {
     <Tabs
       defaultValue="1"
       value={selectedTab.id.toString()}
-      className=" w-full box-border h-full"
+      className=" w-full box-border h-[320px]"
     >
       <ScrollArea className="rounded-md pb-3 ">
         <TabsList>

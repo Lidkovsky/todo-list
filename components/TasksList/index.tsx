@@ -1,7 +1,6 @@
 "use client";
-import useTasks from "@/hooks/useTasks";
-import React, { useEffect, useState } from "react";
-import { TabsContent } from "../ui/tabs";
+import React from "react";
+
 import TaskCard from "../TaskCard";
 import { Task } from "@/lib/types";
 import { Draggable } from "react-beautiful-dnd";

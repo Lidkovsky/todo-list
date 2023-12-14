@@ -18,7 +18,7 @@ function LogList() {
           throw error;
         }
         if (data) {
-          setLogs([...logs, ...data]);
+          setLogs(data.reverse());
         }
       } catch (error) {
         console.log(error);
@@ -35,14 +35,14 @@ function LogList() {
       (payload) => {
         const { information, user_id } = payload.new;
 
-        setLogs([...logs, { information: information, user_id: user_id }]);
+        setLogs([{ information: information, user_id: user_id }, ...logs]);
       }
     )
     .subscribe();
 
   return (
     <ScrollArea className="h-full">
-      {logs?.toReversed().map((log, index: number) => (
+      {logs?.map((log, index: number) => (
         <div className="my-2" key={index}>
           <p className="text-slate-600">{log.information}</p>
           <p className="text-xs text-slate-400">By: {log.user_id}</p>
