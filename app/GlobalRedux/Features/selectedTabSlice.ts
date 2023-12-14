@@ -3,10 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export interface SelectedTabState {
   id: string;
-  value: string;
+  category: string | null;
 }
 
-const initialState: Categories = {
+const initialState: SelectedTabState = {
   id: "0",
   category: null,
 };
