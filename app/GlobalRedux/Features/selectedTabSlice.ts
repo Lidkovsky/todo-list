@@ -1,11 +1,14 @@
+import { Categories } from "@/lib/types";
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface SelectedTabState {
+  id: string;
   value: string;
 }
 
-const initialState: SelectedTabState = {
-  value: "My tasks",
+const initialState: Categories = {
+  id: "0",
+  category: null,
 };
 
 const selectedTabSlice = createSlice({
@@ -13,7 +16,8 @@ const selectedTabSlice = createSlice({
   initialState,
   reducers: {
     updateTab: (state, action) => {
-      state.value = action.payload;
+      state.category = action.payload.category;
+      state.id = action.payload.id;
     },
   },
 });

@@ -1,88 +1,125 @@
 import supabase from "@/supabase";
-import { PostgrestResponse } from "@supabase/supabase-js";
 
-import { useEffect, useState } from "react";
 import { Categories } from "@/lib/types";
 
 import { useDispatch, useSelector } from "react-redux";
 
+import { updateTab } from "@/app/GlobalRedux/Features/selectedTabSlice";
+import { RootState } from "@/app/GlobalRedux/store";
+
 import {
-  setCategories,
-  selectCategories,
-} from "../app/GlobalRedux/Features/categoryList/categoriesSlice";
+  deleteCategory as deleteCategoryDispatch,
+  addCategory as addCategoryDispatch,
+} from "@/app/GlobalRedux/Features/categoriesSlice";
 
 const useCategories = () => {
-  //const [categories, setCategories] = useState<Categories[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
-
   const dispatch = useDispatch();
-  const categories = useSelector(selectCategories);
-
-  const fetchData = async () => {
-    setIsLoading(true);
-
+  const categories = useSelector((state: RootState) => state.categories.data);
+  const userId = useSelector((state: RootState) => state.userId.id);
+  const deleteCategory = async (id: string) => {
     try {
-      const response: PostgrestResponse<Categories> = await supabase
-        .from("categories")
-        .select("category");
-      dispatch(setCategories(response.data || []));
-      // setCategories(response.data || []);
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      let categoryIndex = categories.findIndex((c: Categories) => c.id == id);
+      switch (categoryIndex) {
+        case -1:
+          throw "Id not found.";
 
-  const deleteCategory = async (e: React.FormEvent, category: string) => {
-    e.preventDefault();
-    setIsLoading(true);
+        case 0:
+          if (categories.length === 1) {
+            dispatch(
+              updateTab({
+                id: -1,
+                category: null,
+              })
+            );
+          } else {
+            dispatch(
+              updateTab({
+                id: categories[1].id,
+                category: categories[1].category,
+              })
+            );
+          }
 
-    try {
-      const { error: categoriesError } = await supabase
+          break;
+        default:
+          dispatch(
+            updateTab({
+              id: categories[categoryIndex - 1].id,
+              category: categories[categoryIndex - 1].category,
+            })
+          );
+          break;
+      }
+
+      const { data, error } = await supabase
         .from("categories")
         .delete()
-        .eq("category", category)
-        .select();
+        .eq("id", id)
+        .select()
+        .single();
 
-      const { error: tasksError } = await supabase
-        .from("tasks")
-        .delete()
-        .eq("category", category)
-        .select();
+      if (error) {
+        console.log(error);
+        throw error;
+      } else {
+        dispatch(deleteCategoryDispatch(id));
+        await supabase
+          .from("log")
+          .insert([
+            {
+              event_type: "DELETE",
+              information: "Category deleted: " + data.category,
+              table_name: "categories",
+            },
+          ])
+          .select();
+      }
     } catch (error) {
-      return error;
-    } finally {
-      setIsLoading(false);
+      console.log(error);
     }
   };
 
-  const addCategory = async (e: React.FormEvent, category: string) => {
-    setIsLoading(true);
-    e.preventDefault();
+  const addCategory = async (category: string) => {
+    console.log(userId);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("categories")
-        .insert([{ category: category }])
-        .select();
+        .insert([{ category: category, user_id: userId }])
+        .select("*")
+        .single();
+
+      if (error) {
+        console.log(error);
+        throw error;
+      } else {
+        dispatch(
+          updateTab({
+            id: data.id.toString(),
+            category: data.category,
+            user_id: userId,
+          })
+        );
+        dispatch(addCategoryDispatch(data));
+        await supabase
+          .from("log")
+          .insert([
+            {
+              event_type: "INSERT",
+              information: "New category created: " + data.category,
+              table_name: "categories",
+            },
+          ])
+          .select();
+      }
+      return data;
     } catch (error) {
       return error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const refetch = async () => {
-    setIsLoading(true);
-    await fetchData();
-    setIsLoading(false);
+  return {
+    deleteCategory,
+    addCategory,
   };
-
-  return { categories, isLoading, refetch, deleteCategory, addCategory };
 };
 export default useCategories;

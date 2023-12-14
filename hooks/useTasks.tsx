@@ -1,72 +1,106 @@
-import { useState, useEffect } from "react";
-import { PostgrestResponse } from "@supabase/supabase-js";
 import supabase from "@/supabase";
-import type { Task } from "@/lib/types";
+import { Task } from "@/lib/types";
 import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/GlobalRedux/store";
 import {
-  setTasks,
-  selectTasks,
-} from "../app/GlobalRedux/Features/tasksList/tasksSlice";
-
+  insertTask as insertTaskDispatch,
+  deleteTask as deleteTaskDispatch,
+  editTask as editTaskDispatch,
+  completeTask as completeTaskDispatch,
+  unCompleteTask as unCompleteTaskDispatch,
+  fetchTasks,
+} from "@/app/GlobalRedux/Features/tasksSlice";
 const useTasks = () => {
-  //const [data, setData] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
-
   const dispatch = useDispatch();
-  const tasks = useSelector(selectTasks);
 
-  const fetchData = async () => {
-    setIsLoading(true);
-
-    try {
-      const response: PostgrestResponse<Task> = await supabase
-        .from("tasks")
-        .select("*");
-
-      dispatch(
-        setTasks(response.data?.sort((a, b) => b.order - a.order) || [])
-      );
-
-      // setData(response.data?.sort((a, b) => b.order - a.order) || []);
-    } catch (error) {
-      setError(error as Error);
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const selectedTab = useSelector((state: RootState) => state.selectTab);
 
   const editTask = async (editedTask: string, id: string) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("tasks")
         .update({ task: editedTask })
         .eq("id", id)
-        .select();
+        .select()
+        .single();
+
+      if (error) {
+        console.log(error);
+        throw error;
+      } else {
+        dispatch(editTaskDispatch(data));
+        await supabase
+          .from("log")
+          .insert([
+            {
+              event_type: "EDIT",
+              information: "Task - " + id + " - edited to: " + editedTask,
+              table_name: "tasks",
+            },
+          ])
+          .select();
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const deleteTask = async (id: string) => {
+  const deleteTask = async (taskId: string) => {
     try {
-      const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .eq("id", id)
-        .select();
+      const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+      if (error) {
+        console.log(error);
+        throw error;
+      } else {
+        //TODO: add delete task logic
+        //dispatch(deleteTaskDispatch(taskId));
+        dispatch(fetchTasks() as any);
+        await supabase
+          .from("log")
+          .insert([
+            {
+              event_type: "DELETE",
+              information: "Deleted task ID: " + taskId,
+              table_name: "tasks",
+            },
+          ])
+          .select();
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const insertTask = async (task: { task: string; category: string }) => {
+  const insertTask = async (task: string) => {
     try {
       const { data, error } = await supabase
         .from("tasks")
-        .insert([{ task: task.task, category: task.category }])
-        .select();
+        .insert([
+          {
+            task: task,
+            category: selectedTab.category,
+            category_id: selectedTab.id,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        console.log(error);
+        throw error;
+      } else {
+        dispatch(insertTaskDispatch(data));
+        await supabase
+          .from("log")
+          .insert([
+            {
+              event_type: "INSERT",
+              information: "New task: " + task,
+              table_name: "tasks",
+            },
+          ])
+          .select();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -74,33 +108,69 @@ const useTasks = () => {
 
   const completeTask = async (task: Task) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("tasks")
         .update({ completed: !task.completed })
         .eq("id", task.id)
         .select();
+      if (error) {
+        console.log(error.message);
+        throw error;
+      } else {
+        dispatch(fetchTasks() as any);
+        await supabase
+          .from("log")
+          .insert([
+            {
+              event_type: "EDIT",
+              information: task.completed
+                ? "Task unCompleted: " + task.task
+                : "Task completed: " + task.task,
+              table_name: "tasks",
+            },
+          ])
+          .select();
+      }
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const updateOrder = async (newOrder: number, oldOrder: number) => {
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .update({ task_order: newOrder })
+        .eq("task_order", oldOrder)
+        .eq("category_id", selectedTab.id)
+        .select()
+        .single();
 
-  const refetch = () => {
-    setIsLoading(true);
-    fetchData();
+      if (error) {
+        console.log(error);
+        throw error;
+      } else {
+        await supabase
+          .from("log")
+          .insert([
+            {
+              event_type: "EDIT",
+              information: "Changed order for task: " + data.task,
+              table_name: "tasks",
+            },
+          ])
+          .select();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return {
-    tasks,
-    isLoading,
-    error,
     editTask,
-    deleteTask,
     completeTask,
+    deleteTask,
     insertTask,
-    refetch,
+    updateOrder,
   };
 };
 

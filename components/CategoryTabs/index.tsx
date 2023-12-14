@@ -1,47 +1,67 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList } from "@/components/ui/tabs";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import { useDispatch, useSelector } from "react-redux";
-import { updateTab } from "../../app/GlobalRedux/Features/selectedTab/selectedTabSlice";
+import { useSelector } from "react-redux";
 import NewCategoryButton from "../NewCategoryButton";
-import { Categories } from "@/lib/types";
-import useCategories from "@/hooks/useCategories";
 import type { RootState } from "../../app/GlobalRedux/store";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import CategoriesTriggers from "../CategoriesTriggers";
+import useTasks from "@/hooks/useTasks";
+import { useDispatch } from "react-redux";
+import { changeOrder, fetchTasks } from "@/app/GlobalRedux/Features/tasksSlice";
+import { fetchCategories } from "@/app/GlobalRedux/Features/categoriesSlice";
+import { updateTab } from "@/app/GlobalRedux/Features/selectedTabSlice";
 
 function CategoryTabs({ children }: { children: React.ReactNode }) {
-  const selectedTab = useSelector((state: RootState) => state.selectTab.value);
+  const selectedTab = useSelector((state: RootState) => state.selectTab);
+  const tasks = useSelector((state: RootState) => state.tasks.data);
+  const categories = useSelector((state: RootState) => state.categories.data);
+  const { updateOrder } = useTasks();
   const dispatch = useDispatch();
 
-  const { categories } = useCategories();
+  useEffect(() => {
+    dispatch(fetchTasks() as any);
+    dispatch(fetchCategories() as any);
+    categories.length != 0 ?? dispatch(updateTab(categories[0]));
+  }, []);
+
+  const onDragEnd = (result: DropResult) => {
+    const { destination, source } = result;
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+    dispatch(
+      changeOrder({
+        newOrder: destination.index,
+        oldOrder: source.index,
+        selectedTab: selectedTab.id,
+      })
+    );
+
+    updateOrder(destination.index, source.index);
+    // .then(() =>
+    //   dispatch(fetchTasks() as any)
+    // );
+  };
 
   return (
     <Tabs
-      defaultValue="My tasks"
-      value={selectedTab}
-      className="p-2 w-full h-full max-h-[500px] flex  flex-col gap-2 "
-      onChange={(e) => console.log(e)}
+      defaultValue="1"
+      value={selectedTab.id.toString()}
+      className=" w-full box-border h-full"
     >
-      <ScrollArea className="rounded-md pb-3 h-[60px]">
-        <TabsList className="box-border">
-          <TabsTrigger
-            value={"My tasks"}
-            onClick={() => dispatch(updateTab("My tasks"))}
-          >
-            My Tasks
-          </TabsTrigger>
-          {categories?.map(({ category }: Categories) => {
-            return (
-              <TabsTrigger
-                key={category}
-                value={category}
-                onClick={() => dispatch(updateTab(category))}
-              >
-                {category}
-              </TabsTrigger>
-            );
-          })}
+      <ScrollArea className="rounded-md pb-3 ">
+        <TabsList>
+          <CategoriesTriggers />
           <NewCategoryButton />
         </TabsList>
 
@@ -50,8 +70,13 @@ function CategoryTabs({ children }: { children: React.ReactNode }) {
           orientation="horizontal"
         />
       </ScrollArea>
-
-      {children}
+      <ScrollArea
+        style={{ height: "calc(100% - 52px)" }}
+        className="rounded-md border bg-slate-100"
+      >
+        <DragDropContext onDragEnd={onDragEnd}>{children}</DragDropContext>
+        <ScrollBar />
+      </ScrollArea>
     </Tabs>
   );
 }

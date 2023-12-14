@@ -7,21 +7,20 @@ import type { RootState } from "../../app/GlobalRedux/store";
 import { useSelector } from "react-redux";
 
 import { useDispatch } from "react-redux";
-import { updateTab } from "../../app/GlobalRedux/Features/selectedTab/selectedTabSlice";
+import { updateTab } from "../../app/GlobalRedux/Features/selectedTabSlice";
 import { Trash } from "lucide-react";
 
 function DeleteCategory() {
-  const selectedTab = useSelector((state: RootState) => state.selectTab.value);
+  const selectedTab = useSelector((state: RootState) => state.selectTab.id);
   const dispatch = useDispatch();
-  const { deleteCategory, refetch } = useCategories();
-
+  const { deleteCategory } = useCategories();
+  const categories = useSelector((state: RootState) => state.categories);
   return (
     <Button
       variant="secondary"
-      disabled={selectedTab === "My tasks"}
-      onClick={(e) => {
-        dispatch(updateTab("My tasks"));
-        deleteCategory(e, selectedTab).then(refetch);
+      disabled={categories.data.length === 0}
+      onClick={() => {
+        deleteCategory(selectedTab);
       }}
     >
       <Trash size={16} className="mr-1" />

@@ -7,28 +7,15 @@ import { Edit, Save, Trash, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Task } from "@/lib/types";
 import useTasks from "@/hooks/useTasks";
+import { useDispatch } from "react-redux";
+import { unwrapResult } from "@reduxjs/toolkit";
+import supabase from "@/supabase";
 
 function TaskCard({ task }: { task: Task }) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedTask, setEditedTask] = useState<string>(task.task);
-  const { editTask, deleteTask, completeTask, refetch } = useTasks();
+  const { editTask, deleteTask, completeTask } = useTasks();
 
-  if (task.completed) {
-    return (
-      <Card className="shadow-none">
-        <CardContent className="flex justify-between items-center bg-slate-50 cursor-not-allowed p-4">
-          <p className="line-through text-slate-400">{task.task}</p>
-          <Button
-            onClick={() => {
-              completeTask(task).then(refetch);
-            }}
-          >
-            unComplete
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
   return (
     <Dialog>
       <DialogTrigger
@@ -37,16 +24,14 @@ function TaskCard({ task }: { task: Task }) {
       >
         <Card className="">
           <CardContent className=" p-4 flex justify-between items-center">
-            <p>
-              {task.task} {task.order}
-            </p>
+            <p>{task.task}</p>
             <Button
               onClick={(e) => {
                 e.preventDefault();
-                completeTask(task).then(refetch);
+                completeTask(task);
               }}
             >
-              Complete
+              Done
             </Button>
           </CardContent>
         </Card>
@@ -77,10 +62,11 @@ function TaskCard({ task }: { task: Task }) {
               </Button>
               <DialogClose asChild>
                 <Button
+                  type="submit"
                   className="flex gap-2"
                   onClick={() => {
                     setIsEditing(false);
-                    editTask(editedTask, task.id).then(refetch);
+                    editTask(editedTask, task.id);
                   }}
                 >
                   <Save size={16} />
@@ -102,7 +88,7 @@ function TaskCard({ task }: { task: Task }) {
                 <Button
                   className="flex gap-2"
                   variant="destructive"
-                  onClick={(e) => deleteTask(task.id).then(refetch)}
+                  onClick={() => deleteTask(task.id)}
                 >
                   <Trash size={16} />
                   Delete

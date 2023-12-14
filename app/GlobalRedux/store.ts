@@ -1,16 +1,22 @@
 "use client";
 
 import { configureStore } from "@reduxjs/toolkit";
-import selectTabReducer from "./Features/selectedTab/selectedTabSlice";
-import categoriesReducer from "./Features/categoryList/categoriesSlice";
-import tasksReducer from "./Features/tasksList/tasksSlice";
+import selectTabReducer from "./Features/selectedTabSlice";
+import categoriesSlice from "./Features/categoriesSlice";
+import tasksSlice from "./Features/tasksSlice";
+import userIdSlice from "./Features/userSlice";
+
+import { thunk } from "redux-thunk";
 
 export const store = configureStore({
   reducer: {
     selectTab: selectTabReducer,
-    categories: categoriesReducer,
-    tasks: tasksReducer,
+    categories: categoriesSlice,
+    tasks: tasksSlice,
+    userId: userIdSlice,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ thunk: true }).concat(thunk),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

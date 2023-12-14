@@ -12,13 +12,19 @@ import {
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { Input } from "../ui/input";
+import { updateTab } from "../../app/GlobalRedux/Features/selectedTabSlice";
 import useCategories from "@/hooks/useCategories";
+import { useDispatch } from "react-redux";
+import { Categories } from "@/lib/types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/GlobalRedux/store";
 
 function NewCategoryButton() {
   const [newCategory, setNewCategory] = useState<string>("");
 
-  const { addCategory, refetch } = useCategories();
-
+  const { addCategory } = useCategories();
+  const categories = useSelector((state: RootState) => state.categories);
+  const dispatch = useDispatch();
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -35,7 +41,8 @@ function NewCategoryButton() {
           <form
             className="flex w-full flex-col gap-2"
             onSubmit={(e) => {
-              addCategory(e, newCategory).then(refetch);
+              e.preventDefault();
+              addCategory(newCategory);
               setNewCategory("");
             }}
           >

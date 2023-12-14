@@ -1,44 +1,50 @@
 "use client";
 import useTasks from "@/hooks/useTasks";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TabsContent } from "../ui/tabs";
 import TaskCard from "../TaskCard";
 import { Task } from "@/lib/types";
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { Draggable } from "react-beautiful-dnd";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/GlobalRedux/store";
 
-function TasksList() {
-  const { tasks, error } = useTasks();
-  if (error) {
-    return (
-      <div>
-        <p>Something went wrong...</p>
-        <p>{error.message}</p>
-      </div>
-    );
+function TasksList({ category_id }: { category_id: string }) {
+  const tasks = useSelector((state: RootState) => state.tasks);
+
+  if (!tasks.loading && tasks.error) {
+    return <div>Error: {tasks.error}</div>;
   }
-  return (
-    <ScrollArea className="p-2 box-border rounded-md bg-slate-100 h-full scroll-mb-[1px]">
-      {tasks
-        ?.filter((task: Task) => !task.completed)
-        .map((task: Task) => {
-          return (
-            <TabsContent key={task.id} value={task.category}>
-              <TaskCard task={task} />
-            </TabsContent>
-          );
-        })}
 
-      {tasks
-        ?.filter((task: Task) => task.completed)
-        .map((task: Task) => {
-          return (
-            <TabsContent key={task.id} value={task.category}>
-              <TaskCard task={task} />
-            </TabsContent>
-          );
-        })}
-      <ScrollBar />
-    </ScrollArea>
+  return (
+    <div>
+      {!tasks.loading && tasks.data.length ? (
+        <div className="flex flex-col h-full gap-2 p-2 rounded-md">
+          {tasks.data
+            .filter(
+              (task: Task) =>
+                task.category_id === category_id && !task.completed
+            )
+
+            .map((task: Task, index: number) => (
+              <Draggable
+                index={index}
+                key={index + " " + task.id}
+                draggableId={index.toString()}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    <TaskCard task={task} />
+                  </div>
+                )}
+              </Draggable>
+            ))}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
