@@ -6,9 +6,10 @@ export interface SelectedTabState {
   category: string | null;
 }
 
-const initialState: SelectedTabState = {
+const initialState: Categories = {
   id: "0",
   category: null,
+  user_id: null,
 };
 
 const selectedTabSlice = createSlice({
