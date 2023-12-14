@@ -17,7 +17,7 @@ function TasksList({ category_id }: { category_id: string }) {
   return (
     <div>
       {!tasks.loading && tasks.data.length ? (
-        <div className="flex flex-col h-full gap-2 p-2 rounded-md">
+        <div className="flex flex-col h-full p-2 rounded-md">
           {tasks.data
             .filter(
               (task: Task) =>
@@ -33,6 +33,7 @@ function TasksList({ category_id }: { category_id: string }) {
                 {(provided) => (
                   <div
                     ref={provided.innerRef}
+                    className="mb-2"
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >

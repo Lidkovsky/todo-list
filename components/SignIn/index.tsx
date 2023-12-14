@@ -17,6 +17,7 @@ function SignIn({ signUp }: { signUp: () => void }) {
   const dispatch = useDispatch();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,6 +28,7 @@ function SignIn({ signUp }: { signUp: () => void }) {
       });
       if (error) {
         console.log(error);
+        setError(error.message);
         throw error;
       } else {
         dispatch(setUserId(data.session.user.id));
@@ -46,8 +48,11 @@ function SignIn({ signUp }: { signUp: () => void }) {
     } catch (error) {}
   };
   return (
-    <Card className="max-w-[400px] w-full">
-      <CardHeader>
+    <Card
+      className="max-w-[400px] w-full"
+      style={error ? { border: "red solid 2px" } : undefined}
+    >
+      <CardHeader className="flex">
         <CardTitle>Login</CardTitle>
       </CardHeader>
 
@@ -65,6 +70,9 @@ function SignIn({ signUp }: { signUp: () => void }) {
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
           />
+          {error && (
+            <p className="text-red-600 text-xs text-center m-0">{error}</p>
+          )}
           <div className="flex flex-col gap-2 mt-7">
             <Button className="w-full" type="submit">
               Login

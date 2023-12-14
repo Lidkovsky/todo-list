@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 function SignUp({ signIn }: { signIn: () => void }) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   const getURL = () => {
     let url =
@@ -40,6 +41,7 @@ function SignUp({ signIn }: { signIn: () => void }) {
       });
       if (error) {
         console.log(error);
+        setError(error.message);
         throw error;
       } else {
         await supabase
@@ -59,7 +61,10 @@ function SignUp({ signIn }: { signIn: () => void }) {
   };
 
   return (
-    <Card className="max-w-[400px] w-full">
+    <Card
+      className="max-w-[400px] w-full"
+      style={error ? { border: "red solid 2px" } : undefined}
+    >
       <CardHeader>
         <CardTitle>Register</CardTitle>
       </CardHeader>
@@ -78,9 +83,9 @@ function SignUp({ signIn }: { signIn: () => void }) {
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <p className="text-xs text-center text-slate-500">
-            Password should be at least 6 characters long.
-          </p>
+          {error && (
+            <p className="text-red-600 text-xs text-center m-0">{error}</p>
+          )}
           <div className="flex flex-col gap-2 mt-7">
             <Button className="w-full" type="submit">
               Register
