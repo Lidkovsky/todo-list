@@ -1,6 +1,5 @@
 "use client";
-import Tabs from "@/components/CategoryTabs";
-import Footer from "@/components/Footer";
+import TasksTabs from "@/components/TasksTabs";
 import LogWindow from "@/components/LogWindow";
 import Login from "@/components/Login";
 import SignOut from "@/components/SignOut";
@@ -9,7 +8,7 @@ import supabase from "@/supabase";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setUserId } from "./GlobalRedux/Features/userSlice";
-import FunctionBar from "@/components/Footer";
+import FunctionBar from "@/components/FunctionBar";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -54,9 +53,9 @@ export default function Home() {
         <Login />
       ) : (
         <div className="p-2 relative w-full box-border flex h-[420px] flex-col items-center justify-between rounded-lg max-w-3xl mx-auto bg-white">
-          <Tabs>
+          <TasksTabs>
             <TabsContentList />
-          </Tabs>
+          </TasksTabs>
           <div className="flex gap-2 items-end mt-4 justify-between w-full sm:flex-row ">
             <SignOut />
             <FunctionBar />

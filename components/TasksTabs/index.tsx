@@ -14,7 +14,7 @@ import { changeOrder, fetchTasks } from "@/app/GlobalRedux/Features/tasksSlice";
 import { fetchCategories } from "@/app/GlobalRedux/Features/categoriesSlice";
 import { updateTab } from "@/app/GlobalRedux/Features/selectedTabSlice";
 
-function CategoryTabs({ children }: { children: React.ReactNode }) {
+function TasksTabs({ children }: { children: React.ReactNode }) {
   const selectedTab = useSelector((state: RootState) => state.selectTab);
   const tasks = useSelector((state: RootState) => state.tasks.data);
   const categories = useSelector((state: RootState) => state.categories.data);
@@ -85,4 +85,4 @@ function CategoryTabs({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default CategoryTabs;
+export default TasksTabs;
