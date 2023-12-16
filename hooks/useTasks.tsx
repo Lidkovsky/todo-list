@@ -1,7 +1,7 @@
 import supabase from "@/supabase";
 import { Task } from "@/lib/types";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/GlobalRedux/store";
+import { AppDispatch, RootState } from "@/app/GlobalRedux/store";
 import {
   insertTask as insertTaskDispatch,
   deleteTask as deleteTaskDispatch,
@@ -11,7 +11,7 @@ import {
   fetchTasks,
 } from "@/app/GlobalRedux/Features/tasksSlice";
 const useTasks = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const selectedTab = useSelector((state: RootState) => state.selectTab);
   const userId = useSelector((state: RootState) => state.userId.id);
@@ -55,7 +55,7 @@ const useTasks = () => {
       } else {
         //TODO: add delete task logic
         //dispatch(deleteTaskDispatch(taskId));
-        dispatch(fetchTasks() as any);
+        dispatch(fetchTasks());
         await supabase
           .from("log")
           .insert([
@@ -120,7 +120,7 @@ const useTasks = () => {
         console.log(error.message);
         throw error;
       } else {
-        dispatch(fetchTasks() as any);
+        dispatch(fetchTasks());
         await supabase
           .from("log")
           .insert([

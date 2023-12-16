@@ -5,7 +5,7 @@ import { Tabs, TabsList } from "@/components/ui/tabs";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { useSelector } from "react-redux";
 import NewCategoryButton from "../NewCategoryButton";
-import type { RootState } from "../../app/GlobalRedux/store";
+import type { AppDispatch, RootState } from "../../app/GlobalRedux/store";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import CategoriesTriggers from "../CategoriesTriggers";
 import useTasks from "@/hooks/useTasks";
@@ -19,11 +19,11 @@ function CategoryTabs({ children }: { children: React.ReactNode }) {
   const tasks = useSelector((state: RootState) => state.tasks.data);
   const categories = useSelector((state: RootState) => state.categories.data);
   const { updateOrder } = useTasks();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchTasks() as any);
-    dispatch(fetchCategories() as any).then(() => {
+    dispatch(fetchTasks());
+    dispatch(fetchCategories()).then(() => {
       if (categories.length != 0)
         dispatch(
           updateTab({

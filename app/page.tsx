@@ -9,6 +9,7 @@ import supabase from "@/supabase";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setUserId } from "./GlobalRedux/Features/userSlice";
+import FunctionBar from "@/components/Footer";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -58,7 +59,7 @@ export default function Home() {
           </Tabs>
           <div className="flex gap-2 items-end mt-4 justify-between w-full sm:flex-row ">
             <SignOut />
-            <Footer />
+            <FunctionBar />
           </div>
         </div>
       )}
