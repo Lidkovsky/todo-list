@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Categories, Task } from "@/lib/types";
+import { Task } from "@/lib/types";
 import supabase from "@/supabase";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
-import { escape } from "querystring";
 
 interface TasksState {
   loading: boolean;

@@ -8,13 +8,14 @@ import {
   editTask as editTaskDispatch,
   completeTask as completeTaskDispatch,
   unCompleteTask as unCompleteTaskDispatch,
+  changeOrder as changeOrderTaskDispatch,
   fetchTasks,
 } from "@/app/GlobalRedux/Features/tasksSlice";
 const useTasks = () => {
   const dispatch = useDispatch<AppDispatch>();
-
   const selectedTab = useSelector((state: RootState) => state.selectTab);
   const userId = useSelector((state: RootState) => state.userId.id);
+
   const editTask = async (editedTask: string, id: string) => {
     try {
       const { data, error } = await supabase
@@ -140,6 +141,13 @@ const useTasks = () => {
     }
   };
   const updateOrder = async (newOrder: number, oldOrder: number) => {
+    dispatch(
+      changeOrderTaskDispatch({
+        newOrder: newOrder,
+        oldOrder: oldOrder,
+        selectedTab: selectedTab.id,
+      })
+    );
     try {
       const { data, error } = await supabase
         .from("tasks")

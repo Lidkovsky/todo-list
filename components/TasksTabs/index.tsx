@@ -10,13 +10,12 @@ import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import CategoriesTriggers from "../CategoriesTriggers";
 import useTasks from "@/hooks/useTasks";
 import { useDispatch } from "react-redux";
-import { changeOrder, fetchTasks } from "@/app/GlobalRedux/Features/tasksSlice";
+import { fetchTasks } from "@/app/GlobalRedux/Features/tasksSlice";
 import { fetchCategories } from "@/app/GlobalRedux/Features/categoriesSlice";
 import { updateTab } from "@/app/GlobalRedux/Features/selectedTabSlice";
 
 function TasksTabs({ children }: { children: React.ReactNode }) {
   const selectedTab = useSelector((state: RootState) => state.selectTab);
-  const tasks = useSelector((state: RootState) => state.tasks.data);
   const categories = useSelector((state: RootState) => state.categories.data);
   const { updateOrder } = useTasks();
   const dispatch = useDispatch<AppDispatch>();
@@ -46,13 +45,6 @@ function TasksTabs({ children }: { children: React.ReactNode }) {
     ) {
       return;
     }
-    dispatch(
-      changeOrder({
-        newOrder: destination.index,
-        oldOrder: source.index,
-        selectedTab: selectedTab.id,
-      })
-    );
 
     updateOrder(destination.index, source.index);
   };

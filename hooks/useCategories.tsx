@@ -1,9 +1,6 @@
 import supabase from "@/supabase";
-
 import { Categories } from "@/lib/types";
-
 import { useDispatch, useSelector } from "react-redux";
-
 import { updateTab } from "@/app/GlobalRedux/Features/selectedTabSlice";
 import { RootState } from "@/app/GlobalRedux/store";
 
@@ -16,6 +13,7 @@ const useCategories = () => {
   const dispatch = useDispatch();
   const categories = useSelector((state: RootState) => state.categories.data);
   const userId = useSelector((state: RootState) => state.userId.id);
+
   const deleteCategory = async (id: string) => {
     try {
       let categoryIndex = categories.findIndex((c: Categories) => c.id == id);
@@ -81,7 +79,6 @@ const useCategories = () => {
   };
 
   const addCategory = async (category: string) => {
-    console.log(userId);
     try {
       const { data, error } = await supabase
         .from("categories")

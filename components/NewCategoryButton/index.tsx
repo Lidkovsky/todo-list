@@ -12,19 +12,12 @@ import {
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { Input } from "../ui/input";
-import { updateTab } from "../../app/GlobalRedux/Features/selectedTabSlice";
 import useCategories from "@/hooks/useCategories";
-import { useDispatch } from "react-redux";
-import { Categories } from "@/lib/types";
-import { useSelector } from "react-redux";
-import { RootState } from "@/app/GlobalRedux/store";
 
 function NewCategoryButton() {
   const [newCategory, setNewCategory] = useState<string>("");
-
   const { addCategory } = useCategories();
-  const categories = useSelector((state: RootState) => state.categories);
-  const dispatch = useDispatch();
+
   return (
     <Dialog>
       <DialogTrigger asChild>

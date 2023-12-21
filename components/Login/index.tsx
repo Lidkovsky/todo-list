@@ -1,15 +1,6 @@
 "use client";
-import supabase from "@/supabase";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+
+import { useState } from "react";
 import SignIn from "../SignIn";
 import SignUp from "../SignUp";
 

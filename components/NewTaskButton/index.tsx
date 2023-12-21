@@ -17,15 +17,10 @@ import { Input } from "../ui/input";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/GlobalRedux/store";
 import useTasks from "@/hooks/useTasks";
-import useCategories from "@/hooks/useCategories";
-import { insertTask } from "@/app/GlobalRedux/Features/tasksSlice";
-import { useDispatch } from "react-redux";
 
 function NewTaskButton() {
   const [newTask, setNewTask] = useState<string>("");
   const categories = useSelector((state: RootState) => state.categories);
-  const selectedTab = useSelector((state: RootState) => state.selectTab);
-  const dispatch = useDispatch();
   const { insertTask } = useTasks();
 
   return (

@@ -1,5 +1,4 @@
 "use client";
-import useCategories from "@/hooks/useCategories";
 import React from "react";
 import { TabsContent } from "../ui/tabs";
 import TasksList from "../TasksList";
@@ -13,13 +12,6 @@ import LoadingIcon from "../ui/loadingIcon";
 function TabsContentList() {
   const categories = useSelector((state: RootState) => state.categories);
   const tasks = useSelector((state: RootState) => state.tasks);
-  if (categories.data.length === 0) {
-    return (
-      <div className="w-full flex justify-center pt-4">
-        Please add new category.
-      </div>
-    );
-  }
   if (tasks.loading) {
     return (
       <div className="f-full flex justify-center items-center p-9">
@@ -27,6 +19,14 @@ function TabsContentList() {
       </div>
     );
   }
+  if (categories.data.length === 0) {
+    return (
+      <div className="w-full flex justify-center pt-4">
+        Please add new category.
+      </div>
+    );
+  }
+
   return (
     <>
       {categories.data.map((category: Categories, index: number) => {

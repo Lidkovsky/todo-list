@@ -7,9 +7,6 @@ import { Edit, Save, Trash, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Task } from "@/lib/types";
 import useTasks from "@/hooks/useTasks";
-import { useDispatch } from "react-redux";
-import { unwrapResult } from "@reduxjs/toolkit";
-import supabase from "@/supabase";
 
 function TaskCard({ task }: { task: Task }) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
