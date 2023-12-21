@@ -17,6 +17,8 @@ function SignUp({ signIn }: { signIn: () => void }) {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
+  // redirect to URL in case of email confirmation
+
   const getURL = () => {
     let url =
       process?.env?.NEXT_PUBLIC_SITE_URL ??

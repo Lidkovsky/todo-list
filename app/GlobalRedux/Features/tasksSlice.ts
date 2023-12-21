@@ -196,7 +196,7 @@ const tasksSlice = createSlice({
 
     // builder
     //   .addCase(editTask.pending, (state) => {
-    //     // TODO: add loading state
+    // TODO: add loading state
     //   })
     //   .addCase(editTask.fulfilled, (state, action) => {
     //     state.loading = false;

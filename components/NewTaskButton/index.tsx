@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -34,40 +33,39 @@ function NewTaskButton() {
         <DialogHeader>
           <DialogTitle>Enter task</DialogTitle>
         </DialogHeader>
-        <DialogDescription>
-          <form
-            className=" w-full  items-center"
-            onSubmit={(e) => {
-              e.preventDefault();
-              insertTask(newTask);
-              setNewTask("");
-            }}
-          >
-            <Input
-              className="w-full"
-              value={newTask}
-              required
-              onChange={(e) => setNewTask(e.target.value)}
-            />
-            <DialogFooter className="mt-4 gap-2 sm:gap-0">
-              <DialogClose>
-                <Button
-                  variant="secondary"
-                  type="button"
-                  onClick={() => setNewTask("")}
-                  className="w-full"
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
-              <DialogClose>
-                <Button type="submit" className="w-full">
-                  Save
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </DialogDescription>
+
+        <form
+          className=" w-full  items-center"
+          onSubmit={(e) => {
+            e.preventDefault();
+            insertTask(newTask);
+            setNewTask("");
+          }}
+        >
+          <Input
+            className="w-full"
+            value={newTask}
+            required
+            onChange={(e) => setNewTask(e.target.value)}
+          />
+          <DialogFooter className="mt-4 gap-2 sm:gap-0">
+            <DialogClose>
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => setNewTask("")}
+                className="w-full"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+            <DialogClose>
+              <Button type="submit" className="w-full">
+                Save
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
